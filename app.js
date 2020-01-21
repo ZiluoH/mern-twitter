@@ -1,8 +1,42 @@
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
+const db = require("./confg/keys").mongoURI;
+const users = require("./routes/api/users");
+const tweets = require("./routes/api/tweets");
+const User = require("./models/User");
+const bodyParser = require('body-parser');
 
-app.get("/", (req,res) => res.send("Hellow A/a!!"));
 
+
+
+
+mongoose
+    .connect(db, { useNewUrlParser: true })
+    .then(() => console.log("conntected to mongoDB"))
+    .catch(err => console.log(err));
+    
+app.use(bodyParser.urlencoded({
+    extended: false
+}))
+
+app.use(bodyParser.json());
+
+app.get("/", (req,res) => {
+    const user = new User({
+        handle: "Demo",
+        email: "demo@demo.demo",
+        password: "password"
+    })
+    
+    user.save();
+
+    res.send("Hellow A/a!!")
+});
+
+
+app.use("/api/users", users);
+app.use("/api/tweets", tweets);
 
 const port =process.env.PORT || 5000;
 
